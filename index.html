@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sistema web de controle de estoque para materiais e componentes industriais.">
+  <title>StockForge Industrial — Controle de Estoque</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="watermark">CRIADO POR VICTOR MAURÍCIO BARBOSA DE LIMA</div>
+
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="brand brand-login">
+        <div class="brand-mark">SF</div>
+        <div>
+          <strong>StockForge</strong>
+          <span>Industrial</span>
+        </div>
+      </div>
+      <h1>Controle de estoque</h1>
+      <p class="muted">Materiais, movimentações e ordens de produção em um só lugar.</p>
+      <form id="loginForm">
+        <label>Usuário<input id="loginUser" required placeholder="Digite seu usuário" autocomplete="username"></label>
+        <label>Senha<input id="loginPass" type="password" required placeholder="Digite sua senha" autocomplete="current-password"></label>
+        <button class="btn btn-primary btn-block" type="submit">Entrar no sistema</button>
+        <div id="loginError" class="error-box hidden"></div>
+      </form>
+      <div class="demo-box">
+        <b>Acessos de demonstração</b>
+        <span>Administrador: <code>admin</code> / <code>admin123</code></span>
+        <span>Funcionário: <code>funcionario</code> / <code>1234</code></span>
+      </div>
+      <small class="copyright">Projeto acadêmico • Criado por Victor Maurício Barbosa de Lima</small>
+    </div>
+  </div>
+
+  <div id="app" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">SF</div>
+        <div><strong>StockForge</strong><span>Industrial</span></div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-page="dashboard"><span>▦</span> Dashboard</button>
+        <button class="nav-item" data-page="products"><span>▣</span> Produtos</button>
+        <button class="nav-item" data-page="movements"><span>⇄</span> Movimentações</button>
+        <button class="nav-item" data-page="orders"><span>▤</span> Ordens de produção</button>
+        <button class="nav-item" data-page="reports"><span>◫</span> Relatórios</button>
+        <button class="nav-item admin-only" data-page="registrations"><span>⚙</span> Cadastros</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="creator-mini">Criado por<br><b>Victor Maurício Barbosa de Lima</b></div>
+        <button id="logoutBtn" class="nav-item logout"><span>↪</span> Sair</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="menuBtn" class="icon-btn mobile-only">☰</button>
+        <div>
+          <div class="eyebrow">GESTÃO INDUSTRIAL</div>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="top-actions">
+          <div class="system-status"><i></i> Sistema operacional</div>
+          <div class="user-chip"><span id="userAvatar">A</span><div><b id="currentUser">Admin</b><small id="currentRole">Administrador</small></div></div>
+        </div>
+      </header>
+
+      <section id="page-dashboard" class="page active">
+        <div class="hero">
+          <div>
+            <span class="badge">CONTROLE EM TEMPO REAL</span>
+            <h1>Visão geral do estoque</h1>
+            <p>Monitore disponibilidade, alertas e movimentações da operação.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-light" data-action="quick-movement">+ Nova movimentação</button>
+            <button class="btn btn-primary" data-action="quick-product">+ Novo produto</button>
+          </div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card"><div class="stat-icon blue">▣</div><div><span>Produtos cadastrados</span><strong id="statProducts">0</strong><small id="statCategories">0 categorias</small></div></div>
+          <div class="stat-card"><div class="stat-icon green">✓</div><div><span>Itens em estoque</span><strong id="statStock">0</strong><small>quantidade total</small></div></div>
+          <div class="stat-card"><div class="stat-icon orange">!</div><div><span>Abaixo do mínimo</span><strong id="statLow">0</strong><small>requer atenção</small></div></div>
+          <div class="stat-card"><div class="stat-icon red">↕</div><div><span>Movimentações</span><strong id="statMoves">0</strong><small>registradas</small></div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><div><h3>Alertas de estoque</h3><p>Produtos que precisam de reposição</p></div><button class="text-btn" data-page-link="products">Ver produtos →</button></div>
+            <div id="lowStockList" class="alert-list"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div><h3>Movimentações recentes</h3><p>Últimas entradas e saídas</p></div><button class="text-btn" data-page-link="movements">Ver histórico →</button></div>
+            <div id="recentMoves" class="activity-list"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><div><h3>Resumo por categoria</h3><p>Distribuição dos itens registrados</p></div></div>
+          <div id="categoryBars" class="bars"></div>
+        </div>
+      </section>
+
+      <section id="page-products" class="page">
+        <div class="page-actions">
+          <div><h1>Produtos</h1><p>Cadastre e acompanhe componentes e materiais industriais.</p></div>
+          <button class="btn btn-primary admin-action" data-action="quick-product">+ Cadastrar produto</button>
+        </div>
+        <div class="toolbar"><div class="search"><span>⌕</span><input id="productSearch" placeholder="Buscar por código, nome, categoria..."></div><select id="stockFilter"><option value="all">Todos os estoques</option><option value="low">Abaixo do mínimo</option><option value="ok">Estoque normal</option><option value="zero">Sem estoque</option></select></div>
+        <div class="table-wrap"><table><thead><tr><th>Código</th><th>Produto</th><th>Categoria</th><th>Unidade</th><th>Localização</th><th>Estoque</th><th>Mínimo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="productsTable"></tbody></table></div>
+      </section>
+
+      <section id="page-movements" class="page">
+        <div class="page-actions"><div><h1>Movimentações</h1><p>Entradas, saídas, devoluções e ajustes de estoque.</p></div><button class="btn btn-primary" data-action="quick-movement">+ Registrar movimentação</button></div>
+        <div class="summary-strip"><div><span>Entradas</span><b id="moveIn">0</b></div><div><span>Saídas</span><b id="moveOut">0</b></div><div><span>Devoluções</span><b id="moveReturn">0</b></div><div><span>Ajustes</span><b id="moveAdjust">0</b></div></div>
+        <div class="toolbar"><div class="search"><span>⌕</span><input id="movementSearch" placeholder="Buscar movimentação..."></div><select id="movementTypeFilter"><option value="all">Todos os tipos</option><option value="entrada">Entrada</option><option value="saida">Saída</option><option value="devolucao">Devolução</option><option value="ajuste">Ajuste</option></select></div>
+        <div class="table-wrap"><table><thead><tr><th>Data</th><th>Tipo</th><th>Produto</th><th>Quantidade</th><th>Responsável</th><th>Observação</th></tr></thead><tbody id="movementsTable"></tbody></table></div>
+      </section>
+
+      <section id="page-orders" class="page">
+        <div class="page-actions"><div><h1>Ordens de produção</h1><p>Planeje materiais necessários para cada ordem.</p></div><button class="btn btn-primary admin-action" data-action="quick-order">+ Nova ordem</button></div>
+        <div id="ordersGrid" class="orders-grid"></div>
+      </section>
+
+      <section id="page-reports" class="page">
+        <div class="page-actions"><div><h1>Relatórios</h1><p>Gere uma visão consolidada da operação.</p></div><button class="btn btn-primary" data-action="print-report">⌁ Imprimir / PDF</button></div>
+        <div class="report-cards">
+          <div class="report-card"><span>▦</span><h3>Relatório de estoque</h3><p>Lista completa com estoque atual, mínimo e localização.</p><button class="btn btn-outline" data-action="print-report">Gerar relatório</button></div>
+          <div class="report-card"><span>⇄</span><h3>Histórico de movimentações</h3><p>Entradas, saídas, devoluções e ajustes registrados.</p><button class="btn btn-outline" data-action="print-movements">Gerar relatório</button></div>
+          <div class="report-card"><span>▤</span><h3>Ordens de produção</h3><p>Materiais necessários e situação de cada ordem.</p><button class="btn btn-outline" data-action="print-orders">Gerar relatório</button></div>
+        </div>
+        <div class="panel"><div class="panel-head"><div><h3>Indicadores</h3><p>Dados calculados a partir dos registros locais.</p></div></div><div id="reportIndicators" class="indicator-grid"></div></div>
+      </section>
+
+      <section id="page-registrations" class="page">
+        <div class="page-actions"><div><h1>Cadastros auxiliares</h1><p>Gerencie categorias, fornecedores, unidades e localizações.</p></div></div>
+        <div class="registration-grid">
+          <div class="panel"><div class="panel-head"><h3>Categorias</h3><button class="text-btn" data-action="add-category">+ Adicionar</button></div><div id="categoriesList"></div></div>
+          <div class="panel"><div class="panel-head"><h3>Fornecedores</h3><button class="text-btn" data-action="add-supplier">+ Adicionar</button></div><div id="suppliersList"></div></div>
+          <div class="panel"><div class="panel-head"><h3>Unidades de medida</h3><button class="text-btn" data-action="add-unit">+ Adicionar</button></div><div id="unitsList"></div></div>
+          <div class="panel"><div class="panel-head"><h3>Localizações físicas</h3><button class="text-btn" data-action="add-location">+ Adicionar</button></div><div id="locationsList"></div></div>
+        </div>
+      </section>
+
+      <footer>StockForge Industrial • Controle de Estoque • <b>Criado por Victor Maurício Barbosa de Lima</b></footer>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden"><div class="modal-backdrop"></div><div class="modal-card"><div class="modal-head"><div><h3 id="modalTitle">Título</h3><p id="modalSubtitle"></p></div><button class="icon-btn" data-action="close-modal">×</button></div><div id="modalBody"></div></div></div>
+
+  <div id="toast" class="toast"></div>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
